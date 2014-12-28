@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+ 
+{% block page_title %}{{ title }}{% endblock %}    
+
+{% block content %}
+<article class="col-md-12 blog-post">
+<div class="gal-img">
+<img class="img-responsive" src="{{ url }}" alt=""/>
+</div><!--end gal-img-->
+<div class="news-info">Published on {{ date }} | Tags: {% for tag in tags %}
+<a href="/tags/{{ tag }}">{{tag}}</a>;&nbsp;
+{% endfor %}
+</div>
+<p>{{ body }}</p>
+
+<div class="read-more"><a href="single-post-right-sidebar.html">Read More</a></div>
+</article><!--col-md-12-->
+{% endblock %}

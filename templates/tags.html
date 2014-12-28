@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block head_title %}35Found - Tags{% endblock %}
+{% block page_title %}
+{% if page_title %} 
+{{ page_title }}
+{% else %}
+Tags
+{% endif %}
+{% endblock %}    
+
+{% block content %}
+{% for tag in tags %}
+  <p><a href="/tags/{{ tag[0] }}">{{ tag[0] }}</a> ({{ tag[1]}})</p>
+{% endfor %}
+
+{% endblock %}
+
+
+
+
+
+

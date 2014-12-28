@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block head_title %}35Found - Page {{ current_page }}{% endblock %}
+{% block page_title %}
+{% if page_title %} 
+{{ page_title }}
+{% else %}
+35Found - Page {{ current_page }}
+{% endif %}
+{% endblock %}    
+
+{% block content %}
+{% for post in posts %}
+<article class="col-md-12 blog-post">
+<h3 class="title-blog-post"><a href="/{{ post[0] }}">{{ post[1] }}</a></h3>
+<a href="/{{ post[0] }}"><img class="img-responsive" src="{{ post[3] }}" alt=""/></a>
+<div class="news-info">Published: {{ post[4] }}</div><p>{{ post[2] }}</p>
+
+
+</article>
+{% endfor %}
+{% endblock %}
