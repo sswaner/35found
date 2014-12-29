@@ -4,3 +4,11 @@
 /resized
 /slides
 /thumbnails
+*.db
+*.DS_Store
+build/
+
+*.swp
+*.swi
+*.pyc
+*.pyo
