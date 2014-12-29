@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS page (
+    id integer primary key autoincrement,
+    url text NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS tag (
+    pid integer NOT NULL,
+    tag text NOT NULL
+);
