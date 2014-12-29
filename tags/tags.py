@@ -16,6 +16,7 @@ def startup():
 @app.before_request
 def setup():
     g.conn = sqlite3.connect(DB)
+    g.conn.execute("PRAGMA foreign_keys = ON");
 
 @app.after_request
 def teardown(resp):
