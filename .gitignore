@@ -4,3 +4,6 @@
 /resized
 /slides
 /thumbnails
+*.db
+*.DS_Store
+build/
