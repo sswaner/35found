@@ -1,6 +1,7 @@
 from flask import Flask, request, g, abort
 import sqlite3
 import json
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -31,6 +32,16 @@ def page_prune(curs):
     DELETE FROM page WHERE
         (select count(*) from tag WHERE pid = id) < 1
     """)
+
+def tags_all(curs):
+    curs.execute("""
+    SELECT p.url, t.tag FROM tag as t
+        JOIN page as p on p.id = t.pid
+    """)
+    results = defaultdict(set)
+    for (url, tag) in curs.fetchall():
+        results[url].add(tag)
+    return results
 
 def tags_for(curs, url):
     curs.execute("""
@@ -71,17 +82,20 @@ def tags_clear(curs, url):
 @app.route("/tags.json", methods=["GET"])
 def tags():
     curs = g.conn.cursor()
-    result = {
-        "url": request.args["url"],
-        "tags": tags_for(curs, request.args["url"])
-    }
-    if not result["tags"]: abort(404)
+    if "url" in request.args:
+        result = tags_for(curs, request.args["url"])
+        if len(result) == 0: abort(404)
+    else:
+        result = {}
+        for (key, tags) in tags_all(curs).iteritems():
+            result[key] = list(tags)
     curs.close()
     return json.dumps(result), 200, { "Content-Type": "application/json" }
 
 @app.route("/tags.json", methods=["POST"])
 def add_tags():
-    tags = json.load(request.stream)["tags"]
+    tags = json.load(request.stream)
+    if len(tags) < 1: abort(400)
     curs = g.conn.cursor()
     page_ensure(curs, request.args["url"])
     tags_push(curs, request.args["url"], tags)
@@ -92,29 +106,29 @@ def add_tags():
 
 @app.route("/tags.json", methods=["DELETE"])
 def remove_tags():
-    sentinal = object()
-    try:
-        tags = json.load(request.stream)["tags"]
-    except ValueError:
-        tags = sentinal
+    body = request.stream.read()
+    tags = []
+    if body == "":
+        op = lambda curs, url, ts: tags_clear(curs, url)
+    else:
+        tags = json.load(request.stream)
+        op = tags_pop
+        if len(tags) < 1: abort(400)
 
     curs = g.conn.cursor()
     page_ensure(curs, request.args["url"])
-    if tags is sentinal:
-        tags_clear(curs, request.args["url"])
-    else:
-        tags_pop(curs, request.args["url"], tags)
-
+    op(curs, request.args["url"], tags)
     page_prune(curs)
     curs.close()
     g.conn.commit()
+
     return "", 200, {}
 
 @app.route("/tags/<tag>/pages.json", methods=["GET"])
 def query_pages(tag):
     curs = g.conn.cursor()
     result = dict(pages = urls_for(curs, tag))
-    if not result["pages"]: abort(404)
+    if len(result["pages"]) == 0: abort(404)
     curs.close()
     return json.dumps(result), 200, {"Content-Type": "application/json" }
 
