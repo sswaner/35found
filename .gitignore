@@ -5,3 +5,11 @@
 /slides
 /thumbnails
 /build
+*.db
+*.DS_Store
+build/
+*.swp
+*.swi
+*.pyc
+*.pyo
+35found.db
