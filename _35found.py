@@ -1,4 +1,4 @@
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask import Flask, Response, request, session, g, redirect, url_for, abort, render_template, flash
 import sqlite3
 
 conn = sqlite3.connect('35found.db', check_same_thread = False)
@@ -121,7 +121,7 @@ def edit_post(post_id):
 		set_tags(request.form['tags'], post_id)
 		return redirect(url_for(".detail", post_id=str(post_id)))
 
-@app.route('/<int:post_id>')
+@app.route('/<int:post_id>.html')
 def detail(post_id):
 	tag_list = get_tags(post_id)
 	tags = [x[0] for x in tag_list]
@@ -137,18 +137,22 @@ def detail(post_id):
 	c = conn.cursor()
 	c.execute("select max(page) from post;")
 	last_page = c.fetchone()[0]
+	c.execute("select max(id) from post;")
+	last_id = c.fetchone()[0]
 	return render_template('post-detail.html', title = p['title'], body = p['body'],
-			url = p['url'], date = p['publish_date'], tags = tags, last_page = last_page, 
-			current_page = p['page'])
+			url = p['url'], date = p['publish_date'], tags = tags, 
+			last_id = last_id, current_id = post_id,
+			last_page = last_page, 
+			current_page = p['page'], show_page_control = 1), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
-@app.route('/tags')
+@app.route('/tags.html')
 def list_tags():
 	c = conn.cursor()
 	c.execute("select tag, count(post_id) from tag_post group by tag order by tag;")
 	rows = c.fetchall()
 	return render_template("tags.html", tags = rows, current_page = 1, last_page = 1, show_page_control = 0)
 
-@app.route('/tags/<tag>')
+@app.route('/tags/<tag>.html')
 def tag_matches(tag):
 	c = conn.cursor()
 	c.execute("""select id, title, body, publish_date 
@@ -161,7 +165,7 @@ def tag_matches(tag):
 	else:
 		return abort(404)
 
-@app.route('/page/<int:page>')
+@app.route('/page/<int:page>.html')
 def load_page(page):
 	c = conn.cursor()
 	c.execute("""select id, title, body, slide_url, publish_date
@@ -175,13 +179,13 @@ def load_page(page):
 		current_page = page,
 		show_page_control = 1)
 
-@app.route('/faq')
+@app.route('/faq.html')
 def faq():
 	return render_template("faq.html")
 
-@app.route('/search')
+@app.route('/search.html')
 def search():
-	return "This is Search"
+	return render_template("search.html")
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0')

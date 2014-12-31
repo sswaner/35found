@@ -12,8 +12,8 @@
 {% block content %}
 {% for post in posts %}
 <article class="col-md-12 blog-post">
-<h3 class="title-blog-post"><a href="/{{ post[0] }}">{{ post[1] }}</a></h3>
-<a href="/{{ post[0] }}"><img class="img-responsive" src="{{ post[3] }}" alt=""/></a>
+<h3 class="title-blog-post"><a href="/{{ post[0] }}.html">{{ post[1] }}</a></h3>
+<a href="/{{ post[0] }}.html"><img class="img-responsive" src="{{ post[3] }}" alt=""/></a>
 <div class="news-info">Published: {{ post[4] }}</div><p>{{ post[2] }}</p>
 
 

@@ -10,11 +10,30 @@
 <img class="img-responsive" src="{{ url }}" alt=""/>
 </div><!--end gal-img-->
 <div class="news-info">Published on {{ date }} | Tags: {% for tag in tags %}
-<a href="/tags/{{ tag }}">{{tag}}</a>;&nbsp;
+<a href="/tags/{{ tag }}.html">{{tag}}</a>;&nbsp;
 {% endfor %}
 </div>
 <p>{{ body }}</p>
+<div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = '35found'; // required: replace example with your forum shortname
 
-<div class="read-more"><a href="single-post-right-sidebar.html">Read More</a></div>
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+<p>
+{% if current_id > 1 %}
+
+<div class="read-more" style="float: left"><a href="/{{ current_id - 1 }}.html">Prior Post</a></div>{% endif %}&nbsp;
+{% if current_id < last_id %}
+<div class="read-more" style="float: right"><a href="/{{ current_id + 1 }}.html">Next Post</a></div>
+{% endif %}</p>
 </article><!--col-md-12-->
 {% endblock %}

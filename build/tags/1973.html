@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>{% block head_title %}{% endblock %}</title>
+    <title></title>
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
        
@@ -84,43 +84,10 @@
 <div class="container home-apoint">
 <div class="row">
 <div class="col-md-9 home-apoint-text">
-<h2>{% block page_title %}{{ page_title }}{% endblock %}</h2>
+<h2>Posts tagged "1973"</h2>
 </div>
 <div class="col-md-3"><span>
-{% if show_page_control == 1 %}
-Jump To {% if current_page - 1 < 2 %}
-  {% if current_page == 1 %}
-  <span class='page-numbers current'>1</span> 
-  {% else %}
-  <a class='page-numbers' href='/page/1.html' title='Page 3'>1</a>
-  {% endif %}
-  {% if current_page == 2 %}
-  <span class='page-numbers current'>2</span> 
-  {% else %}
-  <a class='page-numbers' href='/page/2.html' title='Page 3'>2</a>
-  {% endif %}
-  <a class='page-numbers' href='/page/3.html' title='Page 3'>3</a>...         
-  <a class='page-numbers' href='/page/{{ last_page }}.html' title='Page 3'>{{ last_page }}</a> 
-{% elif last_page == current_page %}
-  <a class='page-numbers' href='/page/1.html' title='Page 3'>1</a>...
-  <a class='page-numbers' href='/page/{{ current_page - 2 }}.html' title='Page 3'>{{ current_page - 2 }}</a>         
-  <a class='page-numbers' href='/page/{{ current_page - 1 }}.html' title='Page 3'>{{ current_page - 1 }}</a> 
-  <span class='page-numbers current'>{{ current_page }}</span>       
-{% elif last_page - current_page < 2 %}
-  <a class='page-numbers' href='/page/1.html' title='Page 3'>1</a>...
-  <a class='page-numbers' href='/page/{{ current_page - 2 }}.html' title='Page 3'>{{ current_page - 2 }}</a>         
-  <a class='page-numbers' href='/page/{{ current_page - 1 }}.html' title='Page 3'>{{ current_page - 1}}</a> 
-  <span class='page-numbers current'>{{ current_page }}</span>        
-  <a class='page-numbers' href='/page/{{ last_page }}.html' title='Page 3'>{{ last_page }}</a> 
-{% else %}
-  <a class='page-numbers' href='/page/1' title='Page 2'>1</a>...  
-  <a class='page-numbers' href='/page/{{ current_page - 1 }}.html' title='Page 3'>{{ current_page - 1 }}</a> 
-  <span class='page-numbers current'>{{ current_page }}</span> 
-  <a class='page-numbers' href='/page/{{ current_page + 1 }}.html' title='Page 3'>{{ current_page + 1 }}</a>{% if last_page - current_page > 2 %}...{% endif %}         
-  <a class='page-numbers' href='/page/{{ last_page }}.html' title='Page 3'>{{ last_page }}</a>    
-{% endif %}  
-<p><span class="pages">This is page {{ current_page }} of {{ last_page }}</span></p>
-{% endif %}
+
 </span></div>
 </div><!--end row-->
 </div><!--end container-->
@@ -134,7 +101,13 @@ Jump To {% if current_page - 1 < 2 %}
 
 <div class="row">
 
-{% block content %}{% endblock %}
+
+
+<p><h3><a href="/2.html">Marriott Hotel, March 1973</a></h3>Not sure of the city, my guess is Chicago....</p>
+
+<p><h3><a href="/13.html">City View, 1973</a></h3>View towards suburbs.  City unknown....</p>
+
+
 
 </div><!--end row-->
  
@@ -158,7 +131,7 @@ Jump To {% if current_page - 1 < 2 %}
 
 </li><!--end search-->
 <li>
-<a class="twitter-timeline" href="https://twitter.com/35Found" data-widget-id="550131169593802752">Tweets by @35Found</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<a class="twitter-timeline" href="https://twitter.com/sswaner" data-widget-id="546320998304198656">Tweets by @sswaner</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 </aside><!--end sidebar-->
 
 </div><!--end row-->
