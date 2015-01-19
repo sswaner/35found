@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title></title>
+    <title>{% block head_title %}{% endblock %}</title>
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
        
@@ -41,19 +41,17 @@
  <div class="mainWrap">
   <div class="wrap topbar">
     <div class="container">
-    <div class="sitetitle" style="font: bebasregular; font-size: 20px; font-weight: bold; color: #FFF; width: 45%; float: left;">35Found.com - Giving New Life to Old Film</div>
-    <div style="float: right;">
     <ul class="social-media">
       <li><a class="facebook" href="#" target="_blank">Facebook</a></li>
       <li><a class="twitter" href="#" target="_blank">Twitter</a></li>
       <li><a class="rss" href="#" target="_blank">Rss</a></li>
-    </ul></div>
+    </ul>
 </div><!--end container-->
 </div><!--end topbar-->
 
 <header class="wrap">
-    <div class="container"><div style="width:650px; float: left;">
-Posts tagged "Boats"</div>
+    <div class="container">
+  <a class="logo" href="/"><img src="https://s3.amazonaws.com/35found/css/logo.jpg" style="height: 90" alt="35Found.com" /></a>
     <nav id="nav-desktop">
     <ul class="menu">
    <li><a href="/">HOME</a>
@@ -61,6 +59,10 @@ Posts tagged "Boats"</div>
   <li><a  href="/">ABOUT</a>
    <ul class="sub-menu">
    <li><a href="/">Our Team</a>
+    <ul>
+   <li><a href="/">3 Columns</a></li>
+   <li><a href="/">4 Columns</a></li>
+   </ul>
    </li>
    <li><a href="/faq.html">FAQ</a>
    </li>
@@ -79,9 +81,44 @@ Posts tagged "Boats"</div>
 <div class="container home-apoint">
 <div class="row">
 <div class="col-md-9 home-apoint-text">
-
+<h2>{% block page_title %}{{ page_title }}{% endblock %}</h2>
 </div>
-
+<div class="col-md-3"><span>
+{% if show_page_control == 1 %}
+Jump To {% if current_page - 1 < 2 %}
+  {% if current_page == 1 %}
+  <span class='page-numbers current'>1</span> 
+  {% else %}
+  <a class='page-numbers' href='/page/1.html' title='Page 3'>1</a>
+  {% endif %}
+  {% if current_page == 2 %}
+  <span class='page-numbers current'>2</span> 
+  {% else %}
+  <a class='page-numbers' href='/page/2.html' title='Page 3'>2</a>
+  {% endif %}
+  <a class='page-numbers' href='/page/3.html' title='Page 3'>3</a>...         
+  <a class='page-numbers' href='/page/{{ last_page }}.html' title='Page 3'>{{ last_page }}</a> 
+{% elif last_page == current_page %}
+  <a class='page-numbers' href='/page/1.html' title='Page 3'>1</a>...
+  <a class='page-numbers' href='/page/{{ current_page - 2 }}.html' title='Page 3'>{{ current_page - 2 }}</a>         
+  <a class='page-numbers' href='/page/{{ current_page - 1 }}.html' title='Page 3'>{{ current_page - 1 }}</a> 
+  <span class='page-numbers current'>{{ current_page }}</span>       
+{% elif last_page - current_page < 2 %}
+  <a class='page-numbers' href='/page/1.html' title='Page 3'>1</a>...
+  <a class='page-numbers' href='/page/{{ current_page - 2 }}.html' title='Page 3'>{{ current_page - 2 }}</a>         
+  <a class='page-numbers' href='/page/{{ current_page - 1 }}.html' title='Page 3'>{{ current_page - 1}}</a> 
+  <span class='page-numbers current'>{{ current_page }}</span>        
+  <a class='page-numbers' href='/page/{{ last_page }}.html' title='Page 3'>{{ last_page }}</a> 
+{% else %}
+  <a class='page-numbers' href='/page/1' title='Page 2'>1</a>...  
+  <a class='page-numbers' href='/page/{{ current_page - 1 }}.html' title='Page 3'>{{ current_page - 1 }}</a> 
+  <span class='page-numbers current'>{{ current_page }}</span> 
+  <a class='page-numbers' href='/page/{{ current_page + 1 }}.html' title='Page 3'>{{ current_page + 1 }}</a>{% if last_page - current_page > 2 %}...{% endif %}         
+  <a class='page-numbers' href='/page/{{ last_page }}.html' title='Page 3'>{{ last_page }}</a>    
+{% endif %}  
+<p><span class="pages">This is page {{ current_page }} of {{ last_page }}</span></p>
+{% endif %}
+</span></div>
 </div><!--end row-->
 </div><!--end container-->
 <!--end wrap-->
@@ -94,11 +131,7 @@ Posts tagged "Boats"</div>
 
 <div class="row">
 
-
-
-<p><h3><a href="/10.html">Fish Creek Pond, 1954</a></h3>Another early picture.  This one from 1954.  Labelled &#34;Fish Creek Pond&#34;....</p>
-
-
+{% block content %}{% endblock %}
 
 </div><!--end row-->
  
@@ -107,10 +140,6 @@ Posts tagged "Boats"</div>
 
 <aside class="col-md-3">
 <ul>
-<li>
-<div class="col-md-32"><span>
-
-</span></div></li>
 <li id="search-field">
 <form action="http://www.35found.com/search.html" id="cse-search-box">
   <div>
@@ -169,14 +198,4 @@ Posts tagged "Boats"</div>
 
 </div><!--end mainWrap-->
 </body>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-197311-10', 'auto');
-  ga('send', 'pageview');
-
-</script>
 </html>

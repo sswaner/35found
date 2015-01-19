@@ -1,7 +1,12 @@
 from flask import Flask, Response, request, session, g, redirect, url_for, abort, render_template, flash
 import sqlite3
+import utility
+from collections import namedtuple
+import datetime
+from datetime import timedelta
+import random
 
-conn = sqlite3.connect('35found.db', check_same_thread = False)
+conn = sqlite3.connect('35found.db', detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread = False)
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -34,6 +39,8 @@ def get_post(post_id):
 	c.execute("""select title, body, publish_date, page, slide_url 
 					from post where id = ?""", (post_id, ))
 	r = c.fetchone()
+	if r is None:
+		return None
 	p['title'] = r[0]
 	p['body'] = r[1]
 	p['publish_date'] = r[2]
@@ -45,7 +52,20 @@ def get_post(post_id):
 @app.route('/add_entry', methods=['GET', 'POST'])
 def add_entry():
 	if request.method == 'GET':
-		return render_template('blog-entry.html', action = '/add_entry', url = 'https://s3.amazonaws.com/35found/thumbnail/')
+		unpublished_slides = utility.get_unused_slides(conn)
+		c = conn.cursor()
+		c.execute("select max(publish_date) from post;")
+		
+		# 2015-01-01 03:19:00
+		current_lead_date = datetime.datetime.strptime(c.fetchone()[0], '%Y-%m-%d %H:%M:%S')
+		rand_hours = random.randrange(5, 25)
+		rand_minutes = random.randrange(1, 59)
+		suggested_time = current_lead_date + timedelta(hours=rand_hours) + timedelta(minutes=rand_minutes)
+		return render_template('blog-entry.html', action = '/add_entry', 
+				url = 'https://s3.amazonaws.com/35found/thumbnail/',
+				slides = unpublished_slides,
+				date = suggested_time)
+	
 	else:
 		c = conn.cursor()
 		c.execute("select max(id) from post;")
@@ -54,6 +74,7 @@ def add_entry():
 
 		publish_date = request.form['publish_date']
 
+		
 		page = int((new_id / 5) + 1)
 		try:
 			c.execute("""INSERT into post (id, title, body, publish_date, slide_url, page) 
@@ -74,10 +95,11 @@ def add_entry():
 def index():
 	c = conn.cursor()
 	c.execute("""select id, title, body, slide_url, publish_date
-					from post where id order by id desc LIMIT 4""")
+					from post  where publish_date <= datetime('now') 
+					order by id desc LIMIT 4""")
 	posts = c.fetchall()
 	page_data = {}
-	c.execute("select max(page) from post;")
+	c.execute("select max(page) from post where publish_date <= datetime('now') ;")
 	last_page = c.fetchone()[0]
 
 
@@ -105,7 +127,8 @@ def edit_post(post_id):
 			url = p['url'], 
 			date = p['publish_date'], 
 			action='/{0}/edit'.format(str(post_id)),
-			tags = tags)
+			tags = tags,
+			mode = 'edit')
 	else:
 		c = conn.cursor()
 		try:
@@ -131,13 +154,13 @@ def detail(post_id):
 		print("database error")
 		raise
 		return abort(404)
-	if not p:
+	if p is None:
 		print("Nothing returned")
 		return abort(404)
 	c = conn.cursor()
-	c.execute("select max(page) from post;")
+	c.execute("select max(page) from post where publish_date <= datetime('now');")
 	last_page = c.fetchone()[0]
-	c.execute("select max(id) from post;")
+	c.execute("select max(id) from post where publish_date <= datetime('now');")
 	last_id = c.fetchone()[0]
 	return render_template('post-detail.html', title = p['title'], body = p['body'],
 			url = p['url'], date = p['publish_date'], tags = tags, 
@@ -148,7 +171,9 @@ def detail(post_id):
 @app.route('/tags.html')
 def list_tags():
 	c = conn.cursor()
-	c.execute("select tag, count(post_id) from tag_post group by tag order by tag;")
+	c.execute("""select tag, count(post_id) from tag_post where tag in (select tag from tag_post t 
+		inner join post p on t.post_id = p.id 
+		 where publish_date <= datetime('now')) and tag != '' group by tag order by tag;""")
 	rows = c.fetchall()
 	return render_template("tags.html", tags = rows, current_page = 1, last_page = 1, show_page_control = 0)
 
@@ -158,7 +183,7 @@ def tag_matches(tag):
 	c.execute("""select id, title, body, publish_date 
 		from post p 
 		inner join tag_post t on p.id = t.post_id 
-		where t.tag = ?;""", (tag, ))
+		where t.tag = ? and p.publish_date <= datetime('now') ;""", (tag, ))
 	rows = c.fetchall()
 	if rows:
 		return render_template("tag_post.html", posts = rows, tag = tag)
@@ -169,10 +194,12 @@ def tag_matches(tag):
 def load_page(page):
 	c = conn.cursor()
 	c.execute("""select id, title, body, slide_url, publish_date
-					from post where page = ?""", (page, ))
+					from post where page = ? and publish_date <= datetime('now') 
+					order by publish_date desc;"""
+					, (page, ))
 	posts = c.fetchall()
 	page_data = {}
-	c.execute("select max(page) from post;")
+	c.execute("select max(page) from post where publish_date <= datetime('now');")
 	last_page = c.fetchone()[0]
 	return render_template("page.html", posts = posts, 
 		last_page = last_page, 
@@ -186,6 +213,25 @@ def faq():
 @app.route('/search.html')
 def search():
 	return render_template("search.html")
+
+@app.route('/rss.xml')
+def rss():
+	Post = namedtuple("Post", ['id', 'title', 'slide_url', 'publish_date', 'page', 'body'])
+	def post_desc(post):
+		return """
+		<p>{post.body}</p>
+		<img src="{post.slide_url}" />
+		""".format(post = post)
+	c = conn.cursor()
+	rs = c.execute("""select id, title, slide_url, publish_date, page, body 
+		from post where publish_date <= datetime('now') order by id desc;""").fetchall()
+	# print ([(l, type(l)) for l in rs[0]])
+	posts = [Post(*r) for r in rs]
+	posts = [(p, post_desc(p)) for p in posts]
+	
+	return render_template("rss.xml", datetime = datetime.datetime, 
+		date_format = '%a, %d %b %Y %H:%M:%S GMT', posts = posts ), 200, {'Content-Type': 'application/rss+xml; charset=utf-8'}
+
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0')

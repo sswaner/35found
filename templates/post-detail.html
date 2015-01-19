@@ -2,7 +2,7 @@
 
 {% block title %}{{ title }}{% endblock %}
  
-{% block page_title %}{{ title }}{% endblock %}    
+{% block page_title %}<div class="page-title" style="float: lefft">{{ title }}</div>{% endblock %}    
 
 {% block content %}
 <article class="col-md-12 blog-post">
@@ -13,7 +13,7 @@
 <a href="/tags/{{ tag }}.html">{{tag}}</a>;&nbsp;
 {% endfor %}
 </div>
-<p>{{ body }}</p>
+<p>{{ body|safe }}</p>
 <div id="disqus_thread"></div>
     <script type="text/javascript">
         /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */

@@ -3,9 +3,14 @@
 {% block head_title %}35Found - Page {{ current_page }}{% endblock %}
 {% block page_title %}
 {% if page_title %} 
-{{ page_title }}
+<span class = "page-title">{{ page_title }}</span>
 {% else %}
-35Found - Page {{ current_page }}
+<div class="page-title" style="float: lefft">35Found - Page {{ current_page }}</div>{% if current_page > 1 %}
+
+<a href="/page/{{ current_page - 1 }}.html">Prior Page</a>{% endif %}&nbsp;
+{% if current_page < last_page %}
+<a href="/page/{{ current_page + 1 }}.html">Next Page</a>
+{% endif %}
 {% endif %}
 {% endblock %}    
 
@@ -14,9 +19,18 @@
 <article class="col-md-12 blog-post">
 <h3 class="title-blog-post"><a href="/{{ post[0] }}.html">{{ post[1] }}</a></h3>
 <a href="/{{ post[0] }}.html"><img class="img-responsive" src="{{ post[3] }}" alt=""/></a>
-<div class="news-info">Published: {{ post[4] }}</div><p>{{ post[2] }}</p>
+<div class="news-info">Published: {{ post[4] }}</div><p>{{ post[2]|safe }}</p>
 
 
 </article>
 {% endfor %}
+
+<p>
+{% if current_page > 1 %}
+
+<div class="read-more" style="float: left"><a href="/page/{{ current_page - 1 }}.html">Prior Page</a></div>{% endif %}&nbsp;
+{% if current_page < last_page %}
+<div class="read-more" style="float: right"><a href="/page/{{ current_page + 1 }}.html">Next Page</a></div>
+{% endif %}</p>
+
 {% endblock %}
